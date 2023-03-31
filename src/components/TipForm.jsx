@@ -2,24 +2,29 @@ import React, { useEffect, useState } from "react";
 import Button from "./Button";
 import { DollarIcon, PersonIcon } from "./Svg";
 
-const TipForm = ({ processValue }) => {
+const TipForm = ({ processValue, removeItem }) => {
   const [numberIsValid, setNumberIsValid] = useState(false);
-  const [numberOfPeople, setNumberOfPeople] = useState(0);
+  const [numberOfPeople, setNumberOfPeople] = useState(1);
   const [bill, setBill] = useState(0);
   const [billIsValid, setBillIsValid] = useState(false);
   const [tip, setTip] = useState(0);
 
   //! Functions for Bill
   const billHandler = (event) => {
-    setBill(event.target.value);
+    setBill(+event.target.value);
   };
   useEffect(() => {
     setBillIsValid(bill > 0);
   }, [bill]);
-  console.log(bill);
+
+
   //! Functions for number of people
   const handlePeopleNumber = (event) => {
-    setNumberOfPeople(event.target.value);
+    console.log(event.target.value);
+    if (+event.target.value <= 0) {
+      setNumberOfPeople(1);
+    }
+    setNumberOfPeople(+event.target.value);
   };
   useEffect(() => {
     setNumberIsValid(numberOfPeople > 0);
@@ -28,10 +33,10 @@ const TipForm = ({ processValue }) => {
   //! Functions for button
 
   const handleClick = (event) => {
-    setTip(event.target.value);
+    setTip(+event.target.value);
     event.preventDefault();
   };
-
+  
   useEffect(() => {
     processValue(bill, tip, numberOfPeople);
   }, [bill, tip, numberOfPeople]);
@@ -40,7 +45,7 @@ const TipForm = ({ processValue }) => {
     <React.Fragment>
       <div className="flex flex-col text-left w-2/4 ">
         <div className="flex justify-between mt-4">
-          <p className="font-mono text-xs text-green-900">Bill</p>
+          <p className={`font-mono text-xs   text-green-900`}>Bill</p>
           {!billIsValid && (
             <p className="font-mono text-xs text-orange-600">
               Must be greater than zero !
@@ -52,11 +57,15 @@ const TipForm = ({ processValue }) => {
           <DollarIcon className={"absolute inline-block top-2 left-1"} />
           <input
             onChange={billHandler}
-            value={bill}
+            value={bill.toString()}
             min="0"
             step="1"
             type="number"
-            className="text-right inline-block focus:bg-green-300 focus:border-y-green-300 appearance-none"
+            className={`text-right inline-block appearance-none ${
+              billIsValid
+                ? " focus:bg-green-300 focus:border-y-green-300"
+                : " focus:bg-orange-500 focus:border-y-orange-500"
+            }`}
           />
         </div>
 
@@ -90,11 +99,15 @@ const TipForm = ({ processValue }) => {
           <PersonIcon className={"absolute inline-block top-2 left-1 "} />
           <input
             onChange={handlePeopleNumber}
-            value={numberOfPeople}
-            min="0"
+            value={numberOfPeople.toString()}
+            min="1"
             step="1"
             type="number"
-            className="text-right inline-block focus:bg-green-300 focus:border-y-green-300 appearance-none"
+            className={`text-right inline-block appearance-none ${
+              numberIsValid
+                ? " focus:bg-green-300 focus:border-y-green-300"
+                : " focus:bg-orange-500 focus:border-y-orange-500"
+            }`}
           />
         </div>
       </div>
